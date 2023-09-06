@@ -1,0 +1,36 @@
+- restConfiguration:
+    component: platform-http
+    scheme: http
+    host: 127.0.0.1
+    port: '8080'
+    enableCors: true
+    bindingMode: json
+- rest:
+    id: rest-6ea4
+    post:
+      - id: post-fe26
+        path: /token
+        consumes: application/json
+        produces: application/json
+        bindingMode: 'off'
+        enableCors: true
+        to: direct:tokenPOST
+- routeConfiguration:
+    id: tokenEndpoint
+- route:
+    id: tokenPOST
+    from:
+      uri: direct
+      id: from-0591
+      parameters:
+        name: tokenPOST
+      steps:
+        - setBody:
+            id: setBody-9285
+            expression:
+              simple:
+                expression: "{\"access_token\": \"4e188f51-6ff4-3eb0-bb8b-235b652b123a\",\"token_type\": \"Bearer\",\t\"expires_in\": 3600}"
+                id: simple-e0ff
+        - log:
+            message: ${body}
+            id: log-2b85
