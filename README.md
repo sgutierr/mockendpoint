@@ -1,23 +1,40 @@
+# Description
+
+In this repository, you will find a service which represents a token mock endpoint. It response always the same access token. 
+The development is using Quarkus and Apache Camel DSL. 
 
 
-Pre-requisites:
--JBang: JBang must be installed on your machine. See instructions on how to download and install the JBang: https://www.jbang.dev/download/ or run this command to install the latest version:
+# Installation requirements
 
-curl -Ls https://sh.jbang.dev | bash -s - app setup
+- OpenShift cluster
+- JBang must be installed on your machine. See instructions on how to download and install the JBang: https://www.jbang.dev/download/ or run this command to install the latest version: 
+   ```
+    curl -Ls https://sh.jbang.dev | bash -s - app setup
+    source ~/.bashrc
+    jbang version
+   ```
 
-source ~/.bashrc
+# How to build
 
-jbang version
+1. Clone this project.
+2. Open application.properties file and replace the {namespace} varaible by your namespace.
+2. Deploy:
 
-Steps:
+   Sign in your OpenShift cluster:
+   ```
+   jbang -Dcamel.jbang.version=3.21.0 camel@apache/camel export --fresh  --directory={PROJECT_PATH}/.export && mvn clean package -f .export
+   ```
 
-# Scaffold a new Camel project
+
+# Steps followed to create this REST API (don't run these commands, this section is for documention purposes):
+
+## Scaffold a new Camel project
 Select **Karavan: Create Application** from the context menu in the VSCode editor.
 
     • Select Quarkus for the runtime, choose Quarkus for the runtime and enter the groupId, artifactId, and version 
     • See a new file, application.properties
 
-# Create the Camel integration route and the REST API: 
+## Create the Camel integration route and the REST API: 
 Select **Karavan: Create Integration** from the context menu in the VSCode editor.
 
 Open the Karavan editor (Karavan: Open) and set up:
@@ -31,8 +48,7 @@ Open the Karavan editor (Karavan: Open) and set up:
 
         -  Set body with the Response string
 
-
-# Deploy the service: 
+## Deploy the service: 
 
    **Locally**
 
@@ -58,7 +74,7 @@ Wait for the container image build to finish
 Congratulations! You successfully created a s2i build and built container images. The image is now deployed on your Openshift
 
 
-# TESTING: 
+# TESTING 
 curl --location --request POST 'http://mocktoken-appdev-integration.apps.ocp4.quitala.eu/token' \
 --header 'Content-Type: application/json' \
 --data-raw '{
