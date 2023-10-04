@@ -3,20 +3,43 @@
     scheme: http
     host: 127.0.0.1
     port: '8080'
-    enableCors: true
     bindingMode: json
+    enableCors: true
 - rest:
+    path: mock
+    consumes: application/json
+    produces: application/json
+    bindingMode: 'off'
+    enableCors: true
     id: rest-6ea4
-    post:
-      - id: post-fe26
-        path: /token
+    get:
+      - path: '{mock_endpoint_path}'
+        to: direct:get_endpoint
         consumes: application/json
         produces: application/json
         bindingMode: 'off'
         enableCors: true
-        to: direct:tokenPOST
-- routeConfiguration:
-    id: tokenEndpoint
+        id: get-dd08
+    post:
+      - path: /token
+        to: >-
+          language:constant:{"access_token":
+          "4e188f51-6ff4-3eb0-bb8b-235b652b123a","token_type":
+          "Bearer","expires_in": 3600}
+        consumes: application/json
+        produces: application/json
+        bindingMode: 'off'
+        enableCors: true
+        id: post-fe26
+        responseMessage:
+          - code: '200'
+            message: Access token returned
+            examples:
+              - key: ex1
+                value: >-
+                  {     "access_token":
+                  "4e188f51-6ff4-3eb0-bb8b-235b652b123a",     "token_type":
+                  "Bearer",     "expires_in": 3600 }
 - route:
     id: tokenPOST
     from:
@@ -26,11 +49,32 @@
         name: tokenPOST
       steps:
         - setBody:
-            id: setBody-9285
             expression:
               simple:
-                expression: "{\"access_token\": \"4e188f51-6ff4-3eb0-bb8b-235b652b123a\",\"token_type\": \"Bearer\",\t\"expires_in\": 3600}"
+                expression: '{{ openshift.post.message: local.post.message }}'
                 id: simple-e0ff
+            id: setBody-9285
         - log:
             message: ${body}
             id: log-2b85
+- route:
+    id: route-acc8
+    from:
+      uri: direct
+      id: from-5e35
+      parameters:
+        name: get_endpoint
+      steps:
+        - setBody:
+            expression:
+              constant:
+                expression: >-
+                  {{openshift.get.message.response1:{"response": "mock
+                  response"}  }}
+                id: constant-8e46
+            id: setBody-8c15
+        - log:
+            message: ${body}
+            id: log-038b
+- routeConfiguration:
+    id: tokenEndpoint

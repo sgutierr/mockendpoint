@@ -1,8 +1,9 @@
 # Description
 
-In this repository, you will find a service which represents a token mock endpoint. It response always the same access token. 
+In this repository, you will find a service which represents a mock endpoint. It returns the string that you fill into the configmap mock-responses. If in the integration route doesn't find the configmap, it returns the default value: {"response": "mock response"}
+The integration route exposes a REST service with a GET path and this format 127.0.0.1:8080/mock/{your path}
+![](docs/mock_endpoint.png)
 The development is using Quarkus and Apache Camel DSL. 
-
 
 # Installation requirements
 
@@ -17,8 +18,17 @@ The development is using Quarkus and Apache Camel DSL.
 # How to build
 
 1. Clone this project.
-2. Open application.properties file and replace the {namespace} varaible by your namespace.
-2. Deploy:
+2. Open application.properties file and replace the "appdev-integration" properties values with your namespace name.
+3. Create ConfigMap with the response content:
+   ```
+   apiVersion: v1
+   kind: ConfigMap
+   metadata:
+     name: mock-responses
+   data:
+     openshift.get.message.response1: {"Example of": "mockresponse" }
+   ``` 
+4. Deploy:
 
    Sign in your OpenShift cluster:
    ```
@@ -75,8 +85,16 @@ Congratulations! You successfully created a s2i build and built container images
 
 
 # TESTING 
+
+Example of testing mockendpoints (the response must be filled previously in the configmap mock-responses otherwise response the default one)
+
+curl http://localhost:8080/mock/testendpoint
+
+
 curl --location --request POST 'http://mocktoken-appdev-integration.apps.ocp4.quitala.eu/token' \
 --header 'Content-Type: application/json' \
 --data-raw '{
 "token": "test"
 }'
+
+
